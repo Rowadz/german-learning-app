@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
-import type { VocabEntry, LearningStatus } from '../types';
-import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
-import { toggleBookmark, selectIsBookmarked } from '../store/bookmarksSlice';
-import { setEntryStatus, selectEntryStatus } from '../store/progressSlice';
+import { useState, useCallback, useRef, useEffect } from "react";
+import type { VocabEntry, LearningStatus } from "../types";
+import { useAppDispatch, useAppSelector } from "../hooks/useAppStore";
+import { toggleBookmark, selectIsBookmarked } from "../store/bookmarksSlice";
+import { setEntryStatus, selectEntryStatus } from "../store/progressSlice";
 
 interface FlashcardProps {
   entry: VocabEntry;
@@ -11,11 +11,20 @@ interface FlashcardProps {
   showControls?: boolean;
 }
 
-export function Flashcard({ entry, onNext, onPrevious, showControls = true }: FlashcardProps) {
+export function Flashcard({
+  entry,
+  onNext,
+  onPrevious,
+  showControls = true,
+}: FlashcardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [animState, setAnimState] = useState<"enter" | "exit">("enter");
+  const animTimerRef = useRef<number | null>(null);
   const dispatch = useAppDispatch();
 
-  const isBookmarked = useAppSelector((state) => selectIsBookmarked(state, entry.id));
+  const isBookmarked = useAppSelector((state) =>
+    selectIsBookmarked(state, entry.id),
+  );
   const status = useAppSelector((state) => selectEntryStatus(state, entry.id));
 
   const handleFlip = useCallback(() => {
@@ -30,39 +39,87 @@ export function Flashcard({ entry, onNext, onPrevious, showControls = true }: Fl
     (newStatus: LearningStatus) => {
       dispatch(setEntryStatus({ entryId: entry.id, status: newStatus }));
     },
-    [dispatch, entry.id]
+    [dispatch, entry.id],
   );
 
+  useEffect(() => {
+    // schedule enter animation after mount or when entry changes
+    if (animTimerRef.current) {
+      window.clearTimeout(animTimerRef.current);
+      animTimerRef.current = null;
+    }
+    animTimerRef.current = window.setTimeout(() => {
+      setAnimState("enter");
+      animTimerRef.current = null;
+    }, 30);
+
+    return () => {
+      if (animTimerRef.current) {
+        window.clearTimeout(animTimerRef.current);
+        animTimerRef.current = null;
+      }
+    };
+  }, [entry.id]);
+
+  const handleNextClick = useCallback(() => {
+    if (!onNext) return;
+    // trigger exit animation then call onNext
+    setAnimState("exit");
+    if (animTimerRef.current) {
+      window.clearTimeout(animTimerRef.current);
+      animTimerRef.current = null;
+    }
+    animTimerRef.current = window.setTimeout(() => {
+      onNext();
+      // enter for the next card will be scheduled by effect
+      animTimerRef.current = null;
+    }, 300);
+  }, [onNext]);
+
   const statusColors: Record<LearningStatus, string> = {
-    new: 'badge-neutral',
-    learning: 'badge-warning',
-    known: 'badge-success',
+    new: "badge-neutral",
+    learning: "badge-warning",
+    known: "badge-success",
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto px-2 sm:px-0">
+    <div
+      className={`w-full max-w-lg mx-auto px-2 sm:px-0 transform transition-all duration-300 ${animState === "enter" ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"}`}
+    >
       {/* Flashcard */}
       <div
-        className={`flip-card w-full h-64 sm:h-80 cursor-pointer ${isFlipped ? 'flipped' : ''}`}
+        className={`flip-card w-full h-64 sm:h-80 cursor-pointer ${isFlipped ? "flipped" : ""}`}
         onClick={handleFlip}
       >
         <div className="flip-card-inner">
           {/* Front */}
           <div className="flip-card-front card bg-base-200 shadow-xl h-full">
             <div className="card-body flex flex-col items-center justify-center p-4 sm:p-6">
-              <div className="badge badge-outline mb-2 sm:mb-4 text-xs sm:text-sm">{entry.category}</div>
-              <h2 className="card-title text-2xl sm:text-3xl text-center leading-tight">{entry.noun}</h2>
-              <p className="text-base-content/60 mt-2 sm:mt-4 text-sm">Tap to flip</p>
+              <div className="badge badge-outline mb-2 sm:mb-4 text-xs sm:text-sm">
+                {entry.category}
+              </div>
+              <h2 className="card-title text-2xl sm:text-3xl text-center leading-tight">
+                {entry.noun}
+              </h2>
+              <p className="text-base-content/60 mt-2 sm:mt-4 text-sm">
+                Tap to flip
+              </p>
             </div>
           </div>
 
           {/* Back */}
           <div className="flip-card-back card bg-primary text-primary-content shadow-xl h-full">
             <div className="card-body flex flex-col items-center justify-center overflow-y-auto p-4 sm:p-6">
-              <h3 className="text-lg sm:text-xl font-bold mb-2 text-center">{entry.phrase}</h3>
+              <h3 className="text-lg sm:text-xl font-bold mb-2 text-center">
+                {entry.phrase}
+              </h3>
               <div className="divider divider-primary-content/30 my-1 sm:my-2 w-full"></div>
-              <p className="text-xs sm:text-sm italic mb-2 text-center">{entry.example}</p>
-              <p className="text-xs sm:text-sm opacity-80 text-center">{entry.translation}</p>
+              <p className="text-xs sm:text-sm italic mb-2 text-center">
+                {entry.example}
+              </p>
+              <p className="text-xs sm:text-sm opacity-80 text-center">
+                {entry.translation}
+              </p>
             </div>
           </div>
         </div>
@@ -83,15 +140,15 @@ export function Flashcard({ entry, onNext, onPrevious, showControls = true }: Fl
             </button>
 
             <button
-              className={`btn flex-1 sm:flex-none order-1 sm:order-2 ${isBookmarked ? 'btn-warning' : 'btn-outline'}`}
+              className={`btn flex-1 sm:flex-none order-1 sm:order-2 ${isBookmarked ? "btn-warning" : "btn-outline"}`}
               onClick={handleBookmark}
             >
-              {isBookmarked ? '★ Bookmarked' : '☆ Bookmark'}
+              {isBookmarked ? "★ Bookmarked" : "☆ Bookmark"}
             </button>
 
             <button
               className="btn btn-outline flex-1 sm:flex-none order-3"
-              onClick={onNext}
+              onClick={handleNextClick}
               disabled={!onNext}
             >
               <span className="mr-1">Next</span>
@@ -104,20 +161,20 @@ export function Flashcard({ entry, onNext, onPrevious, showControls = true }: Fl
             <span className="text-sm mb-1 sm:mb-0 sm:mr-2">Mark as:</span>
             <div className="flex gap-2 w-full sm:w-auto">
               <button
-                className={`btn btn-sm flex-1 sm:flex-none ${status === 'new' ? 'btn-neutral' : 'btn-outline'}`}
-                onClick={() => handleStatusChange('new')}
+                className={`btn btn-sm flex-1 sm:flex-none ${status === "new" ? "btn-neutral" : "btn-outline"}`}
+                onClick={() => handleStatusChange("new")}
               >
                 New
               </button>
               <button
-                className={`btn btn-sm flex-1 sm:flex-none ${status === 'learning' ? 'btn-warning' : 'btn-outline'}`}
-                onClick={() => handleStatusChange('learning')}
+                className={`btn btn-sm flex-1 sm:flex-none ${status === "learning" ? "btn-warning" : "btn-outline"}`}
+                onClick={() => handleStatusChange("learning")}
               >
                 Learning
               </button>
               <button
-                className={`btn btn-sm flex-1 sm:flex-none ${status === 'known' ? 'btn-success' : 'btn-outline'}`}
-                onClick={() => handleStatusChange('known')}
+                className={`btn btn-sm flex-1 sm:flex-none ${status === "known" ? "btn-success" : "btn-outline"}`}
+                onClick={() => handleStatusChange("known")}
               >
                 Known
               </button>
