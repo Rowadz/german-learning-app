@@ -53,3 +53,87 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: oklch(var(--bc) / 0.5);
 }
+
+/* Mobile-first responsive utilities */
+@media (max-width: 640px) {
+  /* Improve touch targets */
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .btn-sm {
+    min-height: 36px;
+    min-width: 36px;
+  }
+
+  /* Better spacing on mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Stats cards stack better */
+  .stats {
+    flex-direction: column;
+  }
+
+  /* Navbar improvements */
+  .navbar {
+    padding: 0.5rem;
+  }
+
+  /* Card body padding */
+  .card-body {
+    padding: 1rem;
+  }
+
+  /* Modal improvements for mobile */
+  .modal-box {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+/* Prevent text selection on interactive elements */
+.btn, .card {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Safe area insets for notched phones */
+@supports (padding: max(0px)) {
+  .navbar {
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
+
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid oklch(var(--p));
+  outline-offset: 2px;
+}
+
+/* Improve readability on small screens */
+@media (max-width: 640px) {
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+
+  .text-xl {
+    font-size: 1.125rem;
+  }
+}

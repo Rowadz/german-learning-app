@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
-import { selectTheme, setTheme } from '../store/uiSlice';
-import { resetAllProgress } from '../store/progressSlice';
-import { clearAllBookmarks } from '../store/bookmarksSlice';
-import { clearHistory } from '../store/quizzesSlice';
-import { exportData, importData, resetData } from '../utils/localStorage';
-import type { Theme } from '../types';
+import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "../hooks/useAppStore";
+import { selectTheme, setTheme } from "../store/uiSlice";
+import { resetAllProgress } from "../store/progressSlice";
+import { clearAllBookmarks } from "../store/bookmarksSlice";
+import { clearHistory } from "../store/quizzesSlice";
+import { exportData, importData, resetData } from "../utils/localStorage";
+import type { Theme } from "../types";
 
 export function SettingsPage() {
   const dispatch = useAppDispatch();
   const theme = useAppSelector(selectTheme);
-  const [importText, setImportText] = useState('');
-  const [importError, setImportError] = useState('');
+  const [importText, setImportText] = useState("");
+  const [importError, setImportError] = useState("");
   const [importSuccess, setImportSuccess] = useState(false);
 
   const handleThemeChange = (newTheme: Theme) => {
@@ -20,11 +20,11 @@ export function SettingsPage() {
 
   const handleExport = () => {
     const data = exportData();
-    const blob = new Blob([data], { type: 'application/json' });
+    const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `german-learning-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `german-learning-backup-${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -32,41 +32,45 @@ export function SettingsPage() {
   };
 
   const handleImport = () => {
-    setImportError('');
+    setImportError("");
     setImportSuccess(false);
 
     if (!importText.trim()) {
-      setImportError('Please paste your backup data');
+      setImportError("Please paste your backup data");
       return;
     }
 
     const success = importData(importText);
     if (success) {
       setImportSuccess(true);
-      setImportText('');
+      setImportText("");
       // Reload the page to refresh the store
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } else {
-      setImportError('Invalid backup data format');
+      setImportError("Invalid backup data format");
     }
   };
 
   const handleResetProgress = () => {
-    if (confirm('Are you sure you want to reset all learning progress? This cannot be undone.')) {
+    if (
+      confirm(
+        "Are you sure you want to reset all learning progress? This cannot be undone.",
+      )
+    ) {
       dispatch(resetAllProgress());
     }
   };
 
   const handleClearBookmarks = () => {
-    if (confirm('Are you sure you want to clear all bookmarks?')) {
+    if (confirm("Are you sure you want to clear all bookmarks?")) {
       dispatch(clearAllBookmarks());
     }
   };
 
   const handleClearQuizHistory = () => {
-    if (confirm('Are you sure you want to clear all quiz history?')) {
+    if (confirm("Are you sure you want to clear all quiz history?")) {
       dispatch(clearHistory());
     }
   };
@@ -74,7 +78,7 @@ export function SettingsPage() {
   const handleResetAll = () => {
     if (
       confirm(
-        'Are you sure you want to reset ALL data? This will delete all your progress, bookmarks, custom entries, and quiz history. This cannot be undone!'
+        "Are you sure you want to reset ALL data? This will delete all your progress, bookmarks, custom entries, and quiz history. This cannot be undone!",
       )
     ) {
       resetData();
@@ -83,26 +87,28 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+    <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 max-w-2xl">
+      <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">
+        Settings
+      </h1>
 
       {/* Theme */}
-      <div className="card bg-base-200 shadow-md mb-6">
-        <div className="card-body">
-          <h2 className="card-title">Theme</h2>
-          <p className="text-base-content/70 mb-4">
+      <div className="card bg-base-200 shadow-md mb-4 sm:mb-6">
+        <div className="card-body p-4 sm:p-6">
+          <h2 className="card-title text-lg sm:text-xl">Theme</h2>
+          <p className="text-sm sm:text-base text-base-content/70 mb-3 sm:mb-4">
             Choose your preferred color scheme
           </p>
-          <div className="flex gap-4">
+          <div className="flex gap-2 sm:gap-4 flex-wrap">
             <button
-              className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => handleThemeChange('light')}
+              className={`btn ${theme === "light" ? "btn-primary" : "btn-outline"}`}
+              onClick={() => handleThemeChange("light")}
             >
               ☀️ Light
             </button>
             <button
-              className={`btn ${theme === 'dark' ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => handleThemeChange('dark')}
+              className={`btn ${theme === "dark" ? "btn-primary" : "btn-outline"}`}
+              onClick={() => handleThemeChange("dark")}
             >
               🌙 Dark
             </button>
@@ -121,7 +127,10 @@ export function SettingsPage() {
           {/* Export */}
           <div className="mb-6">
             <h3 className="font-semibold mb-2">Export Data</h3>
-            <button className="btn btn-outline btn-primary" onClick={handleExport}>
+            <button
+              className="btn btn-outline btn-primary"
+              onClick={handleExport}
+            >
               📥 Download Backup
             </button>
           </div>
@@ -220,10 +229,7 @@ export function SettingsPage() {
                   Delete all data and restore to factory settings
                 </p>
               </div>
-              <button
-                className="btn btn-error btn-sm"
-                onClick={handleResetAll}
-              >
+              <button className="btn btn-error btn-sm" onClick={handleResetAll}>
                 Reset All Data
               </button>
             </div>
@@ -236,7 +242,8 @@ export function SettingsPage() {
         <div className="card-body">
           <h2 className="card-title">About</h2>
           <p className="text-base-content/70">
-            German Learning App - Learn German vocabulary with flashcards and quizzes.
+            German Learning App - Learn German vocabulary with flashcards and
+            quizzes.
           </p>
           <p className="text-sm text-base-content/50 mt-2">
             Version 1.0.0 | Built with React, Redux Toolkit, and daisyUI

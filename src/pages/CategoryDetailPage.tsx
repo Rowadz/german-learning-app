@@ -1,13 +1,13 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import { useAppSelector, useAppDispatch } from '../hooks/useAppStore';
-import { selectAllEntries, setSearchQuery } from '../store/entriesSlice';
-import { selectProgressByCategory } from '../store/progressSlice';
-import { selectBookmarkCountByCategory } from '../store/bookmarksSlice';
-import { startQuiz } from '../store/quizzesSlice';
-import { EntryCard } from '../components/EntryCard';
-import { getCategoryInfo, type Category, type QuizSettings } from '../types';
-import { CATEGORIES } from '../types';
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useAppSelector, useAppDispatch } from "../hooks/useAppStore";
+import { selectAllEntries, setSearchQuery } from "../store/entriesSlice";
+import { selectProgressByCategory } from "../store/progressSlice";
+import { selectBookmarkCountByCategory } from "../store/bookmarksSlice";
+import { startQuiz } from "../store/quizzesSlice";
+import { EntryCard } from "../components/EntryCard";
+import { getCategoryInfo, type Category, type QuizSettings } from "../types";
+import { CATEGORIES } from "../types";
 
 export function CategoryDetailPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -22,13 +22,13 @@ export function CategoryDetailPage() {
   const isValidCategory = CATEGORIES.some((c) => c.id === categoryId);
 
   const progressCounts = useAppSelector((state) =>
-    selectProgressByCategory(state, category)
+    selectProgressByCategory(state, category),
   );
   const bookmarkCount = useAppSelector((state) =>
-    selectBookmarkCountByCategory(state, category)
+    selectBookmarkCountByCategory(state, category),
   );
 
-  const [localSearch, setLocalSearch] = useState('');
+  const [localSearch, setLocalSearch] = useState("");
 
   // Filter entries by category and search
   const categoryEntries = useMemo(() => {
@@ -41,7 +41,7 @@ export function CategoryDetailPage() {
           e.noun.toLowerCase().includes(query) ||
           e.phrase.toLowerCase().includes(query) ||
           e.example.toLowerCase().includes(query) ||
-          e.translation.toLowerCase().includes(query)
+          e.translation.toLowerCase().includes(query),
       );
     }
 
@@ -52,7 +52,7 @@ export function CategoryDetailPage() {
     const entries = allEntries.filter((e) => e.category === category);
 
     if (entries.length < 4) {
-      alert('Need at least 4 entries to start a quiz.');
+      alert("Need at least 4 entries to start a quiz.");
       return;
     }
 
@@ -60,26 +60,29 @@ export function CategoryDetailPage() {
       questionCount: Math.min(10, entries.length) as 5 | 10 | 20,
       categories: [category],
       bookmarkedOnly: false,
-      quizType: 'noun-to-phrase',
+      quizType: "noun-to-phrase",
     };
 
     dispatch(startQuiz({ settings, entries }));
-    navigate('/quizzes');
+    navigate("/quizzes");
   };
 
   const handleStartFlashcards = () => {
     // Clear global search and navigate to flashcards
-    dispatch(setSearchQuery(''));
+    dispatch(setSearchQuery(""));
     navigate(`/flashcards?category=${category}`);
   };
 
   if (!isValidCategory) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="alert alert-error">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="alert alert-error text-sm sm:text-base">
           <span>Category not found</span>
         </div>
-        <Link to="/categories" className="btn btn-primary mt-4">
+        <Link
+          to="/categories"
+          className="btn btn-primary btn-sm sm:btn-md mt-4"
+        >
           Back to Categories
         </Link>
       </div>
@@ -92,9 +95,9 @@ export function CategoryDetailPage() {
       : 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
       {/* Breadcrumb */}
-      <div className="breadcrumbs text-sm mb-4">
+      <div className="breadcrumbs text-xs sm:text-sm mb-3 sm:mb-4">
         <ul>
           <li>
             <Link to="/categories">Categories</Link>
@@ -163,7 +166,10 @@ export function CategoryDetailPage() {
             onChange={(e) => setLocalSearch(e.target.value)}
           />
           {localSearch && (
-            <button className="btn btn-ghost" onClick={() => setLocalSearch('')}>
+            <button
+              className="btn btn-ghost"
+              onClick={() => setLocalSearch("")}
+            >
               ✕
             </button>
           )}

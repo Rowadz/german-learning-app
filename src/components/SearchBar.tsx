@@ -1,13 +1,16 @@
-import { useCallback } from 'react';
-import { useAppDispatch, useAppSelector } from '../hooks/useAppStore';
-import { setSearchQuery, selectSearchQuery } from '../store/entriesSlice';
+import { useCallback } from "react";
+import { useAppDispatch, useAppSelector } from "../hooks/useAppStore";
+import { setSearchQuery, selectSearchQuery } from "../store/entriesSlice";
 
 interface SearchBarProps {
   placeholder?: string;
   className?: string;
 }
 
-export function SearchBar({ placeholder = 'Search entries...', className = '' }: SearchBarProps) {
+export function SearchBar({
+  placeholder = "Search entries...",
+  className = "",
+}: SearchBarProps) {
   const dispatch = useAppDispatch();
   const searchQuery = useAppSelector(selectSearchQuery);
 
@@ -15,11 +18,11 @@ export function SearchBar({ placeholder = 'Search entries...', className = '' }:
     (e: React.ChangeEvent<HTMLInputElement>) => {
       dispatch(setSearchQuery(e.target.value));
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleClear = useCallback(() => {
-    dispatch(setSearchQuery(''));
+    dispatch(setSearchQuery(""));
   }, [dispatch]);
 
   return (
@@ -28,19 +31,22 @@ export function SearchBar({ placeholder = 'Search entries...', className = '' }:
         <input
           type="text"
           placeholder={placeholder}
-          className="input input-bordered flex-1"
+          className="input input-bordered input-sm sm:input-md flex-1 text-sm sm:text-base"
           value={searchQuery}
           onChange={handleChange}
         />
         {searchQuery && (
-          <button className="btn btn-ghost" onClick={handleClear}>
+          <button
+            className="btn btn-ghost btn-sm sm:btn-md"
+            onClick={handleClear}
+          >
             ✕
           </button>
         )}
-        <button className="btn btn-square btn-primary">
+        <button className="btn btn-square btn-primary btn-sm sm:btn-md">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
+            className="h-4 w-4 sm:h-6 sm:w-6"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"

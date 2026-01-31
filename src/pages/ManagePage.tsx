@@ -1,28 +1,33 @@
-import { useState, useMemo } from 'react';
-import { useAppSelector, useAppDispatch } from '../hooks/useAppStore';
-import { selectAllEntries, deleteEntry, setSearchQuery, selectSearchQuery } from '../store/entriesSlice';
-import { WordForm } from '../components/WordForm';
-import { EntryCard } from '../components/EntryCard';
-import type { VocabEntry, Category } from '../types';
-import { CATEGORIES } from '../types';
+import { useState, useMemo } from "react";
+import { useAppSelector, useAppDispatch } from "../hooks/useAppStore";
+import {
+  selectAllEntries,
+  deleteEntry,
+  setSearchQuery,
+  selectSearchQuery,
+} from "../store/entriesSlice";
+import { WordForm } from "../components/WordForm";
+import { EntryCard } from "../components/EntryCard";
+import type { VocabEntry, Category } from "../types";
+import { CATEGORIES } from "../types";
 
-type ViewMode = 'add' | 'list';
+type ViewMode = "add" | "list";
 
 export function ManagePage() {
   const dispatch = useAppDispatch();
   const allEntries = useAppSelector(selectAllEntries);
   const searchQuery = useAppSelector(selectSearchQuery);
 
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [editingEntry, setEditingEntry] = useState<VocabEntry | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState<Category | 'all'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<Category | "all">("all");
   const [showCustomOnly, setShowCustomOnly] = useState(false);
 
   // Filter entries
   const filteredEntries = useMemo(() => {
     let entries = allEntries;
 
-    if (categoryFilter !== 'all') {
+    if (categoryFilter !== "all") {
       entries = entries.filter((e) => e.category === categoryFilter);
     }
 
@@ -37,7 +42,7 @@ export function ManagePage() {
           e.noun.toLowerCase().includes(query) ||
           e.phrase.toLowerCase().includes(query) ||
           e.example.toLowerCase().includes(query) ||
-          e.translation.toLowerCase().includes(query)
+          e.translation.toLowerCase().includes(query),
       );
     }
 
@@ -48,7 +53,7 @@ export function ManagePage() {
 
   const handleEdit = (entry: VocabEntry) => {
     setEditingEntry(entry);
-    setViewMode('add');
+    setViewMode("add");
   };
 
   const handleDelete = (entry: VocabEntry) => {
@@ -59,53 +64,57 @@ export function ManagePage() {
 
   const handleSave = () => {
     setEditingEntry(null);
-    setViewMode('list');
+    setViewMode("list");
   };
 
   const handleCancel = () => {
     setEditingEntry(null);
-    setViewMode('list');
+    setViewMode("list");
   };
 
   const handleAddNew = () => {
     setEditingEntry(null);
-    setViewMode('add');
+    setViewMode("add");
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+    <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Manage Vocabulary</h1>
-          <p className="text-base-content/70">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
+            Manage Vocabulary
+          </h1>
+          <p className="text-sm sm:text-base text-base-content/70">
             {allEntries.length} total entries ({customCount} custom)
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <button
-            className={`btn ${viewMode === 'list' ? 'btn-primary' : 'btn-outline'}`}
+            className={`btn btn-sm sm:btn-md ${viewMode === "list" ? "btn-primary" : "btn-outline"}`}
             onClick={() => {
-              setViewMode('list');
+              setViewMode("list");
               setEditingEntry(null);
             }}
           >
-            View All
+            <span className="hidden sm:inline">View All</span>
+            <span className="sm:hidden">List</span>
           </button>
           <button
-            className={`btn ${viewMode === 'add' ? 'btn-primary' : 'btn-outline'}`}
+            className={`btn btn-sm sm:btn-md ${viewMode === "add" ? "btn-primary" : "btn-outline"}`}
             onClick={handleAddNew}
           >
-            + Add New
+            + <span className="hidden sm:inline">Add New</span>
+            <span className="sm:hidden">New</span>
           </button>
         </div>
       </div>
 
-      {viewMode === 'add' ? (
+      {viewMode === "add" ? (
         <div className="card bg-base-200 shadow-xl max-w-2xl mx-auto">
           <div className="card-body">
             <h2 className="card-title">
-              {editingEntry ? 'Edit Entry' : 'Add New Entry'}
+              {editingEntry ? "Edit Entry" : "Add New Entry"}
             </h2>
             <WordForm
               entry={editingEntry || undefined}
@@ -132,7 +141,7 @@ export function ManagePage() {
                   {searchQuery && (
                     <button
                       className="btn btn-ghost"
-                      onClick={() => dispatch(setSearchQuery(''))}
+                      onClick={() => dispatch(setSearchQuery(""))}
                     >
                       ✕
                     </button>
@@ -143,19 +152,21 @@ export function ManagePage() {
               {/* Category Filter */}
               <div className="mt-4">
                 <label className="label">
-                  <span className="label-text font-semibold">Filter by Category</span>
+                  <span className="label-text font-semibold">
+                    Filter by Category
+                  </span>
                 </label>
                 <div className="flex flex-wrap gap-2">
                   <button
-                    className={`btn btn-sm ${categoryFilter === 'all' ? 'btn-primary' : 'btn-outline'}`}
-                    onClick={() => setCategoryFilter('all')}
+                    className={`btn btn-sm ${categoryFilter === "all" ? "btn-primary" : "btn-outline"}`}
+                    onClick={() => setCategoryFilter("all")}
                   >
                     All
                   </button>
                   {CATEGORIES.map((cat) => (
                     <button
                       key={cat.id}
-                      className={`btn btn-sm ${categoryFilter === cat.id ? 'btn-primary' : 'btn-outline'}`}
+                      className={`btn btn-sm ${categoryFilter === cat.id ? "btn-primary" : "btn-outline"}`}
                       onClick={() => setCategoryFilter(cat.id)}
                     >
                       {cat.icon} {cat.name}
