@@ -25,16 +25,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: study-app/package-lock.json
+          node-version: "22"
+          cache: "npm"
 
       - name: Install dependencies
-        working-directory: ./study-app
         run: npm ci
 
       - name: Build
-        working-directory: ./german-learning-app
         run: npm run build
 
       - name: Setup Pages
@@ -43,7 +40,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./study-app/dist
+          path: ./dist
 
   deploy:
     environment:
