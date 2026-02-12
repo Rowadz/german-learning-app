@@ -8,6 +8,7 @@ import { CategoryDetailPage } from "./pages/CategoryDetailPage";
 import { BookmarksPage } from "./pages/BookmarksPage";
 import { ManagePage } from "./pages/ManagePage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { VocabBrowserPage } from "./pages/VocabBrowserPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/flashcards" element={<FlashcardsPage />} />
             <Route path="/quizzes" element={<QuizzesPage />} />
+            <Route path="/vocab" element={<VocabBrowserPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route
               path="/categories/:categoryId"

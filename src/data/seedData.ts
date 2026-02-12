@@ -1,6 +1,8 @@
 import type { VocabEntry } from '../types';
+import { enhanceAllEntries } from '../utils/verbAnalysis';
 
-export const seedData: VocabEntry[] = [
+// Raw seed data without verb metadata
+const rawSeedData: VocabEntry[] = [
   // ============ HOME CATEGORY ============
   {
     id: 'home-001',
@@ -1173,3 +1175,7 @@ export const seedData: VocabEntry[] = [
     tags: ['verbs', 'wellness'],
   },
 ];
+
+// Enhanced seed data with verb metadata, opposites, and related entries
+// This is computed once at module load time
+export const seedData: VocabEntry[] = enhanceAllEntries(rawSeedData);

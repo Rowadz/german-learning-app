@@ -6,6 +6,7 @@ const navItems = [
   { path: '/', label: 'Home', icon: '🏠' },
   { path: '/flashcards', label: 'Flashcards', icon: '📇' },
   { path: '/quizzes', label: 'Quizzes', icon: '📝' },
+  { path: '/vocab', label: 'Vocabulary', icon: '📚' },
   { path: '/categories', label: 'Categories', icon: '📁' },
   { path: '/bookmarks', label: 'Bookmarks', icon: '🔖' },
   { path: '/manage', label: 'Manage', icon: '⚙️' },

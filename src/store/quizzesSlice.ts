@@ -222,26 +222,39 @@ export const selectRecentAttempts = createSelector(
   (history) => history.slice(0, 10)
 );
 
+// All available quiz types
+const ALL_QUIZ_TYPES: QuizType[] = [
+  'noun-to-phrase',
+  'phrase-to-translation',
+  'typing',
+  'context-verb-selection',
+  'opposite-action',
+  'prefix-reconstruction',
+  'fill-in-blank-case',
+  'sentence-building',
+  'error-correction',
+  'verb-group-mastery',
+];
+
 export const selectQuizTypeStats = createSelector(
   [selectQuizHistory],
   (history) => {
-    const stats: Record<QuizType, { attempts: number; avgScore: number }> = {
-      'noun-to-phrase': { attempts: 0, avgScore: 0 },
-      'phrase-to-translation': { attempts: 0, avgScore: 0 },
-      'typing': { attempts: 0, avgScore: 0 },
-    };
+    // Initialize stats for all quiz types
+    const stats = {} as Record<QuizType, { attempts: number; avgScore: number }>;
+    const byType = {} as Record<QuizType, number[]>;
 
-    const byType: Record<QuizType, number[]> = {
-      'noun-to-phrase': [],
-      'phrase-to-translation': [],
-      'typing': [],
-    };
-
-    history.filter(a => a.completed).forEach((attempt) => {
-      byType[attempt.settings.quizType].push((attempt.score / attempt.totalQuestions) * 100);
+    ALL_QUIZ_TYPES.forEach((type) => {
+      stats[type] = { attempts: 0, avgScore: 0 };
+      byType[type] = [];
     });
 
-    (Object.keys(byType) as QuizType[]).forEach((type) => {
+    history.filter(a => a.completed).forEach((attempt) => {
+      if (byType[attempt.settings.quizType]) {
+        byType[attempt.settings.quizType].push((attempt.score / attempt.totalQuestions) * 100);
+      }
+    });
+
+    ALL_QUIZ_TYPES.forEach((type) => {
       const scores = byType[type];
       stats[type].attempts = scores.length;
       stats[type].avgScore = scores.length > 0
